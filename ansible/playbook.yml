@@ -1,0 +1,57 @@
+---
+
+- name: Install ElasticSearch MasterNodes.
+  hosts: master_nodes
+  roles:
+    - { role: elastic.elasticsearch, es_instance_name: "node1", es_heap_size: "1g",
+    es_config: {
+      cluster.name: "test-cluster",
+      discovery.zen.minimum_master_hosts: 3,
+      discovery.zen.ping.unicast.hosts: "192.168.2.4:9300, 192.168.2.5:9300",
+      http.port: 9200,
+      transport.tcp.port: 9300,
+      network.host: '0.0.0.0',
+      network.publish_host: "{{ inventory_hostname }}",
+      node.data: false,
+      node.master: true,
+      }
+    }
+  become: yes
+
+- name: Install ElasticSearch Master-Data Nodes.
+  hosts: master_data_nodes
+  roles:
+    - { role: elastic.elasticsearch, es_instance_name: "node1", es_heap_size: "1g",
+    es_config: {
+      cluster.name: "test-cluster",
+      discovery.zen.minimum_master_hosts: 3,
+      discovery.zen.ping.unicast.hosts: "192.168.2.4:9300, 192.168.2.5:9300",
+      http.port: 9200,
+      transport.tcp.port: 9300,
+      network.host: '0.0.0.0',
+      network.publish_host: "{{ inventory_hostname }}",
+      node.data: true,
+      node.master: true,
+      }
+    }
+  become: yes
+
+- name: Install ElasticSearch DataNodes.
+  hosts: data_nodes
+  roles:
+    - { role: elastic.elasticsearch, es_instance_name: "node1", es_heap_size: "1g",
+    es_config: {
+      cluster.name: "test-cluster",
+      discovery.zen.minimum_master_hosts: 3,
+      discovery.zen.ping.unicast.hosts: "192.168.2.4:9300, 192.168.2.5:9300",
+      http.port: 9200,
+      transport.tcp.port: 9300,
+      network.host: '0.0.0.0',
+      network.publish_host: "{{ inventory_hostname }}",
+      node.data: true,
+      node.master: false,
+      }
+    }
+  become: yes
+  vars:
+    es_api_port: 9200
